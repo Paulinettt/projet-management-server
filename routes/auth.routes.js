@@ -1,10 +1,9 @@
 const express = require("express");
 const bcrypt = require('bcryptjs');
 const jwt = require("jsonwebtoken");
-const User = require("../models/User.model");
 
 const {isAuthenticated} = require("../middleware/jwt.middleware");
-
+const User = require("../models/User.model");
 
 const router = express.Router();
 const saltRounds = 10;
@@ -56,7 +55,7 @@ router.post('/signup', (req, res, next) => {
             // We should never expose passwords publicly
             const { email, _id } = createdUser;
 
-            // Create a new object that doesn't expose the password
+            // Create a new object that doesn't expose the password/could contain pages visited...
             const user = { email, _id };
 
             // Send a json response containing the user object
@@ -67,6 +66,7 @@ router.post('/signup', (req, res, next) => {
             res.status(500).json({ message: "Internal Server Error: error creating new user" })
         });
 });
+
 
 // Login
 router.post('/login', (req, res, next) => {
@@ -89,16 +89,15 @@ router.post('/login', (req, res, next) => {
             }
 
             // Compare the provided password with the one saved in the database
-            const passwordCorrect = bcrypt.compareSync(password, foundUser.password);  //returns boolean
+            const passwordCorrect = bcrypt.compareSync(password, foundUser.password);
 
-            if (passwordCorrect) {
-                //login was successful
+            if (passwordCorrect) { // login was successful
 
                 // Deconstruct the user object to omit the password
                 const { _id, email } = foundUser;
 
                 // Create an object that will be set as the token payload
-                const payload = { _id, email};  //could add in there number of pages visited
+                const payload = { _id, email };
 
                 // Create and sign the token
                 const authToken = jwt.sign(
@@ -118,21 +117,18 @@ router.post('/login', (req, res, next) => {
         .catch(err => res.status(500).json({ message: "Internal Server Error" }));
 });
 
-//Verify
-router.get('/verify', isAuthenticated, (req, res, next) => {       
-    
+
+// Verify
+router.get('/verify', isAuthenticated, (req, res, next) => {
  
     // If JWT token is valid the payload gets decoded by the
     // isAuthenticated middleware and made available on `req.payload`
-    console.log(`req.payload`, req.payload);
     console.log("token is valid", req.payload);
-   
+    console.log("req.payload...", req.payload);
+    
     // Send back the object with user data
     // previously set as the token payload
     res.status(200).json(req.payload);
   });
-   
-
-
 
 module.exports = router;

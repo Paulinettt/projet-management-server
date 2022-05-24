@@ -15,6 +15,7 @@ const app = express();
 require("./config")(app);
 
 // 👇 Start handling routes here
+app.use("/api/auth", require("./routes/auth.routes")); //could import isAuthenticated here too
 app.use("/api", require("./routes/index.routes"));
 app.use("/api", require("./routes/project.routes"));
 app.use("/api", require("./routes/task.routes"));

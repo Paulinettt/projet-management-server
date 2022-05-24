@@ -4,9 +4,11 @@ const mongoose = require('mongoose');
 const Project = require('../models/Project.model');
 const Task = require('../models/Task.model');
 
+const {isAuthenticated} = require("..//middleware/jwt.middleware");
+
 
 // Create new project
-router.post('/projects', (req, res, next) => {
+router.post('/projects', isAuthenticated, (req, res, next) => {
     const { title, description } = req.body;
 
     const newProject = {
@@ -65,7 +67,7 @@ router.get('/projects/:projectId', (req, res, next) => {
 });
 
 // PUT  /api/projects/:projectId  -  Updates a specific project by id
-router.put('/projects/:projectId', (req, res, next) => {
+router.put('/projects/:projectId', isAuthenticated, (req, res, next) => {
     const { projectId } = req.params;
 
     if (!mongoose.Types.ObjectId.isValid(projectId)) {
@@ -91,7 +93,7 @@ router.put('/projects/:projectId', (req, res, next) => {
 });
 
 // Delete a specific project by id
-router.delete('/projects/:projectId', (req, res, next) => {
+router.delete('/projects/:projectId', isAuthenticated, (req, res, next) => {
     const { projectId } = req.params;
 
     if (!mongoose.Types.ObjectId.isValid(projectId)) {
